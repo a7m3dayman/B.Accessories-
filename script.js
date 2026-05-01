@@ -118,8 +118,33 @@ function renderSite() {
   renderProducts(data);
 }
 
+function initMobileMenu() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const mainNav = document.querySelector('.main-nav');
+
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('open');
+    });
+
+    // Close menu when clicking outside or on a link
+    document.addEventListener('click', (event) => {
+      if (!menuToggle.contains(event.target) && !mainNav.contains(event.target)) {
+        mainNav.classList.remove('open');
+      }
+    });
+
+    mainNav.addEventListener('click', (event) => {
+      if (event.target.tagName === 'A') {
+        mainNav.classList.remove('open');
+      }
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderSite();
   initHiddenAdminTrigger();
   initSmoothScroll();
+  initMobileMenu();
 });
