@@ -14,6 +14,26 @@ const productList = document.getElementById('product-list');
 const productImageFile = document.getElementById('product-image-file');
 const productImageUrl = document.getElementById('product-image-url');
 
+function showStatus(message, isError = false) {
+  if (!loginMessage) return;
+  loginMessage.textContent = message;
+  if (!message) {
+    loginMessage.classList.remove('success', 'error');
+    return;
+  }
+  loginMessage.classList.toggle('success', !isError);
+  loginMessage.classList.toggle('error', isError);
+}
+
+async function checkServer() {
+  try {
+    const response = await fetch('/api/site-data');
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 function isAdminAuthorized() {
   return sessionStorage.getItem(authKey) === 'true';
 }
@@ -21,14 +41,21 @@ function isAdminAuthorized() {
 function showLogin() {
   loginSection.hidden = false;
   dashboardSection.hidden = true;
-  loginMessage.textContent = '';
+  showStatus('');
   passwordInput.value = '';
 }
 
 async function showDashboard() {
+  const serverAvailable = await checkServer();
+  if (!serverAvailable) {
+    showStatus('الخادم غير متاح. يرجى تشغيل الخادم أولاً بـ "npm start" لإدارة المنتجات.', true);
+    loginSection.hidden = false;
+    dashboardSection.hidden = true;
+    return;
+  }
   loginSection.hidden = true;
   dashboardSection.hidden = false;
-  loginMessage.textContent = '';
+  showStatus('');
   await renderCategoryOptions();
   await renderProductList();
 }
@@ -80,6 +107,7 @@ async function deleteProduct(productId) {
   data.products = data.products.filter(product => product.id !== productId);
   await saveSiteData(data);
   await renderProductList();
+  showStatus('تم حذف المنتج بنجاح.');
 }
 
 async function handleLogin() {
@@ -88,7 +116,7 @@ async function handleLogin() {
     sessionStorage.setItem(authKey, 'true');
     await showDashboard();
   } else {
-    loginMessage.textContent = 'كلمة المرور غير صحيحة، حاول مرة أخرى.';
+    showStatus('كلمة المرور غير صحيحة، حاول مرة أخرى.', true);
   }
 }
 
@@ -104,11 +132,14 @@ async function handleReset() {
   await resetSiteData();
   await renderCategoryOptions();
   await renderProductList();
+  showStatus('تمت إعادة ضبط البيانات إلى الحالة الافتراضية.');
 }
 
 async function handleProductSubmit(event) {
   event.preventDefault();
+  console.log('Submitting product...');
   const data = await loadSiteData();
+  console.log('Loaded data:', data);
   const title = document.getElementById('product-title').value.trim();
   const description = document.getElementById('product-description').value.trim();
   const price = document.getElementById('product-price').value.trim();
@@ -117,7 +148,7 @@ async function handleProductSubmit(event) {
   const imageUrl = productImageUrl?.value.trim();
 
   if (!title || !description || !price || !category || (!file && !imageUrl)) {
-    loginMessage.textContent = 'يرجى ملء كل الحقول وإضافة صورة المنتج.';
+    showStatus('يرجى ملء كل الحقول وإضافة صورة المنتج.', true);
     return;
   }
 
@@ -132,8 +163,12 @@ async function handleProductSubmit(event) {
     };
 
     data.products.push(newProduct);
+    console.log('Saving data:', data);
     await saveSiteData(data);
+    console.log('Data saved successfully');
     productForm.reset();
+    productImageFile.value = '';
+    showStatus('تم إضافة المنتج بنجاح.');
     await renderProductList();
   };
 
@@ -143,7 +178,7 @@ async function handleProductSubmit(event) {
       await addProductWithImage(reader.result);
     };
     reader.onerror = () => {
-      loginMessage.textContent = 'حدث خطأ أثناء قراءة الصورة. حاول مرة أخرى.';
+      showStatus('حدث خطأ أثناء قراءة الصورة. حاول مرة أخرى.', true);
     };
     reader.readAsDataURL(file);
     return;

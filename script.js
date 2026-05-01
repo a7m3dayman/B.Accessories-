@@ -41,12 +41,18 @@ async function loadSiteData() {
 
 async function saveSiteData(data) {
   try {
-    await fetch('/api/site-data', {
+    console.log('Sending data to API:', data);
+    const response = await fetch('/api/site-data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+    console.log('API response:', response);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
   } catch (error) {
+    console.error('Error saving to API:', error);
     localStorage.setItem(storageKey, JSON.stringify(data));
   }
 }
