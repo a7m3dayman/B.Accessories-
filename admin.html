@@ -16,10 +16,14 @@
     <main>
       <section class="container admin-panel">
         <div id="admin-login">
-          <h1>لوحة التحكم</h1>
-          <p>اضغط على الشعار 5 مرات من الصفحة الرئيسة للدخول. أدخل كلمة المرور لتفعيل لوحة التحكم.</p>
+          <div class="admin-header">
+            <div class="admin-icon">🔐</div>
+            <h1>لوحة التحكم</h1>
+            <p>أدخل كلمة المرور للوصول إلى إدارة المتجر</p>
+          </div>
           <div class="admin-login">
             <label>
+              <span class="label-icon">🔑</span>
               كلمة المرور
               <input type="password" id="admin-password" placeholder="أدخل كلمة المرور" />
             </label>
@@ -29,41 +33,94 @@
         </div>
 
         <div id="admin-dashboard" hidden>
-          <div class="admin-actions">
-            <button id="logout-btn" class="btn btn-secondary">تسجيل خروج</button>
-            <button id="reset-btn" class="btn btn-secondary">إعادة ضبط الافتراضي</button>
+          <div class="admin-header">
+            <div class="admin-icon">⚙️</div>
+            <h1>إدارة المتجر</h1>
+            <p>إدارة المنتجات والمحتوى</p>
           </div>
-          <h2>إضافة منتج جديد</h2>
-          <form id="add-product-form" class="admin-form">
-            <label>
-              القسم
-              <select id="product-category"></select>
-            </label>
-            <label>
-              اسم المنتج
-              <input type="text" id="product-title" placeholder="مثال: خاتم ذهب" required />
-            </label>
-            <label>
-              الوصف
-              <textarea id="product-description" placeholder="وصف المنتج" required></textarea>
-            </label>
-            <label>
-              السعر
-              <input type="text" id="product-price" placeholder="مثال: 280 جنيه" required />
-            </label>
-            <label>
-              رفع صورة المنتج
-              <input type="file" id="product-image-file" accept="image/*" />
-            </label>
-            <label>
-              أو رابط صورة (اختياري)
-              <input type="text" id="product-image-url" placeholder="مثال: https://..." />
-            </label>
-            <button type="submit" class="btn btn-primary">إضافة المنتج</button>
-          </form>
 
-          <h2>المنتجات الحالية</h2>
-          <div class="product-list" id="product-list"></div>
+          <div class="admin-stats">
+            <div class="stat-card">
+              <div class="stat-icon">📦</div>
+              <div class="stat-info">
+                <strong id="total-products">0</strong>
+                <span>منتج إجمالي</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📂</div>
+              <div class="stat-info">
+                <strong id="total-categories">6</strong>
+                <span>قسم</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-actions">
+            <button id="logout-btn" class="btn btn-secondary">
+              <span class="btn-icon">🚪</span>
+              تسجيل خروج
+            </button>
+            <button id="reset-btn" class="btn btn-danger">
+              <span class="btn-icon">🔄</span>
+              إعادة ضبط الافتراضي
+            </button>
+          </div>
+
+          <div class="admin-section">
+            <div class="section-header">
+              <div class="section-icon">➕</div>
+              <h2>إضافة منتج جديد</h2>
+            </div>
+            <form id="add-product-form" class="admin-form">
+              <div class="form-row">
+                <label>
+                  <span class="label-icon">📂</span>
+                  القسم
+                  <select id="product-category"></select>
+                </label>
+                <label>
+                  <span class="label-icon">🏷️</span>
+                  اسم المنتج
+                  <input type="text" id="product-title" placeholder="مثال: خاتم ذهب" required />
+                </label>
+              </div>
+              <label>
+                <span class="label-icon">📝</span>
+                الوصف
+                <textarea id="product-description" placeholder="وصف المنتج" required></textarea>
+              </label>
+              <div class="form-row">
+                <label>
+                  <span class="label-icon">💰</span>
+                  السعر
+                  <input type="text" id="product-price" placeholder="مثال: 280 جنيه" required />
+                </label>
+                <label>
+                  <span class="label-icon">📸</span>
+                  رفع صورة المنتج
+                  <input type="file" id="product-image-file" accept="image/*" />
+                </label>
+              </div>
+              <label>
+                <span class="label-icon">🔗</span>
+                أو رابط صورة (اختياري)
+                <input type="text" id="product-image-url" placeholder="مثال: https://..." />
+              </label>
+              <button type="submit" class="btn btn-primary">
+                <span class="btn-icon">✅</span>
+                إضافة المنتج
+              </button>
+            </form>
+          </div>
+
+          <div class="admin-section">
+            <div class="section-header">
+              <div class="section-icon">📋</div>
+              <h2>المنتجات الحالية</h2>
+            </div>
+            <div class="product-list" id="product-list"></div>
+          </div>
         </div>
       </section>
     </main>
