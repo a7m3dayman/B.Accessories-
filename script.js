@@ -24,21 +24,39 @@ const defaultSiteData = {
   ]
 };
 
-function loadSiteData() {
+async function loadSiteData() {
   try {
-    const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : defaultSiteData;
+    const response = await fetch('/api/site-data');
+    if (!response.ok) throw new Error('Server response not ok');
+    return await response.json();
   } catch (error) {
-    return defaultSiteData;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : defaultSiteData;
+    } catch (innerError) {
+      return defaultSiteData;
+    }
   }
 }
 
-function saveSiteData(data) {
-  localStorage.setItem(storageKey, JSON.stringify(data));
+async function saveSiteData(data) {
+  try {
+    await fetch('/api/site-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (error) {
+    localStorage.setItem(storageKey, JSON.stringify(data));
+  }
 }
 
-function resetSiteData() {
-  localStorage.setItem(storageKey, JSON.stringify(defaultSiteData));
+async function resetSiteData() {
+  try {
+    await fetch('/api/reset', { method: 'POST' });
+  } catch (error) {
+    localStorage.setItem(storageKey, JSON.stringify(defaultSiteData));
+  }
 }
 
 function renderCategories(data) {
@@ -112,8 +130,8 @@ function initSmoothScroll() {
   });
 }
 
-function renderSite() {
-  const data = loadSiteData();
+async function renderSite() {
+  const data = await loadSiteData();
   renderCategories(data);
   renderProducts(data);
 }
@@ -127,7 +145,6 @@ function initMobileMenu() {
       mainNav.classList.toggle('open');
     });
 
-    // Close menu when clicking outside or on a link
     document.addEventListener('click', (event) => {
       if (!menuToggle.contains(event.target) && !mainNav.contains(event.target)) {
         mainNav.classList.remove('open');

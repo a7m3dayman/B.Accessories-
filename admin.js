@@ -25,29 +25,31 @@ function showLogin() {
   passwordInput.value = '';
 }
 
-function showDashboard() {
+async function showDashboard() {
   loginSection.hidden = true;
   dashboardSection.hidden = false;
   loginMessage.textContent = '';
-  renderCategoryOptions();
-  renderProductList();
+  await renderCategoryOptions();
+  await renderProductList();
 }
 
-function renderCategoryOptions() {
-  const data = loadSiteData();
+async function renderCategoryOptions() {
+  const data = await loadSiteData();
   if (!productCategory) return;
   productCategory.innerHTML = data.categories
     .map(cat => `<option value="${cat.id}">${cat.title}</option>`)
     .join('');
 }
 
-function renderProductList() {
-  const data = loadSiteData();
+async function renderProductList() {
+  const data = await loadSiteData();
   if (!productList) return;
+
   if (!data.products.length) {
     productList.innerHTML = '<p>لا يوجد منتجات حتى الآن.</p>';
     return;
   }
+
   productList.innerHTML = data.products
     .map(product => {
       const category = data.categories.find(cat => cat.id === product.category);
@@ -73,18 +75,18 @@ function renderProductList() {
   });
 }
 
-function deleteProduct(productId) {
-  const data = loadSiteData();
+async function deleteProduct(productId) {
+  const data = await loadSiteData();
   data.products = data.products.filter(product => product.id !== productId);
-  saveSiteData(data);
-  renderProductList();
+  await saveSiteData(data);
+  await renderProductList();
 }
 
-function handleLogin() {
+async function handleLogin() {
   const value = passwordInput.value.trim();
   if (value === adminPassword) {
     sessionStorage.setItem(authKey, 'true');
-    showDashboard();
+    await showDashboard();
   } else {
     loginMessage.textContent = 'كلمة المرور غير صحيحة، حاول مرة أخرى.';
   }
@@ -95,18 +97,18 @@ function handleLogout() {
   showLogin();
 }
 
-function handleReset() {
+async function handleReset() {
   if (!confirm('هل تريد إعادة ضبط البيانات الافتراضية؟ سيؤدي هذا إلى حذف جميع التغييرات الحالية.')) {
     return;
   }
-  resetSiteData();
-  renderCategoryOptions();
-  renderProductList();
+  await resetSiteData();
+  await renderCategoryOptions();
+  await renderProductList();
 }
 
-function handleProductSubmit(event) {
+async function handleProductSubmit(event) {
   event.preventDefault();
-  const data = loadSiteData();
+  const data = await loadSiteData();
   const title = document.getElementById('product-title').value.trim();
   const description = document.getElementById('product-description').value.trim();
   const price = document.getElementById('product-price').value.trim();
@@ -119,7 +121,7 @@ function handleProductSubmit(event) {
     return;
   }
 
-  const addProductWithImage = imageValue => {
+  const addProductWithImage = async imageValue => {
     const newProduct = {
       id: `${category}-${Date.now()}`,
       category,
@@ -130,15 +132,15 @@ function handleProductSubmit(event) {
     };
 
     data.products.push(newProduct);
-    saveSiteData(data);
+    await saveSiteData(data);
     productForm.reset();
-    renderProductList();
+    await renderProductList();
   };
 
   if (file) {
     const reader = new FileReader();
-    reader.onload = () => {
-      addProductWithImage(reader.result);
+    reader.onload = async () => {
+      await addProductWithImage(reader.result);
     };
     reader.onerror = () => {
       loginMessage.textContent = 'حدث خطأ أثناء قراءة الصورة. حاول مرة أخرى.';
@@ -147,7 +149,7 @@ function handleProductSubmit(event) {
     return;
   }
 
-  addProductWithImage(imageUrl);
+  await addProductWithImage(imageUrl);
 }
 
 function initAdminPage() {
