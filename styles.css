@@ -66,9 +66,12 @@ img {
 .logo img {
   width: 42px;
   height: 42px;
-  border-radius: 12px;
+  border-radius: 999px;
   object-fit: cover;
   display: block;
+  background: #fff;
+  border: 1px solid rgba(62, 33, 63, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .logo span {
